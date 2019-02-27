@@ -77,6 +77,7 @@ namespace Butterfly.Elasticsearch
                     .AutoMap()
                     .Properties(p => p.Keyword(t => t.Name(n => n.TraceId)))
                     .Properties(p => p.Keyword(t => t.Name(n => n.SpanId)))
+                    .Properties(p => p.Keyword(t => t.Name(n => n.OperationName)))
                     .Properties(p => p.Nested<Tag>(n => n.Name(name => name.Tags).AutoMap()))));
 
             var response = _elasticClient.CreateIndex(tracingIndex);

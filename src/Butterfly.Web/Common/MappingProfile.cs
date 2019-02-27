@@ -49,6 +49,9 @@ namespace Butterfly.Server.Common
 
             CreateMap<TraceHistogram, TraceHistogramViewModel>()
                 .ForMember(destination => destination.Time, option => option.MapFrom(target => target.Time.ToString("yyyy-MM-dd HH:mm:ss")));
+
+            CreateMap<TraceOperationHistogram, TraceHistogramViewModel>()
+              .ForMember(destination => destination.Time, option => option.MapFrom(target => target.OperationName));
         }
 
         private static long GetDuration(IEnumerable<Span> spans)
@@ -64,7 +67,7 @@ namespace Butterfly.Server.Common
 
         private static string GetService(Span span)
         {
-           return ServiceHelpers.GetService(span);
+            return ServiceHelpers.GetService(span);
         }
     }
 }

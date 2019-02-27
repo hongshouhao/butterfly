@@ -11,7 +11,7 @@ namespace Butterfly.Common
         public static string GetApplicationUrl(string[] args)
         {
             var configurationBuilder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())   
+                .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", true, false)
                 .AddJsonFile("appsettings.Development.json", true, false)
                 .AddJsonFile("appsettings.Production.json", true, false)
@@ -21,8 +21,8 @@ namespace Butterfly.Common
             {
                 configurationBuilder.AddCommandLine(args);
             }
-            
-            var configuration = configurationBuilder.Build();           
+
+            var configuration = configurationBuilder.Build();
             return configuration[addressKey] ?? defaultAddress;
         }
     }

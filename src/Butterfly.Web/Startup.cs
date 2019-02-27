@@ -34,15 +34,10 @@ namespace Butterfly.Server
             mvcBuilder.AddApplicationPart(typeof(HttpCollectorOptions).Assembly);
 
             services.AddResponseCompression();
-
             services.Configure<HttpCollectorOptions>(Configuration);
-
             services.AddCors();
-
-            services.AddAutoMapper();
-
+            services.AddAutoMapper(option => option.AddProfile<MappingProfile>());
             services.AddSwaggerGen(option => { option.SwaggerDoc("v1", new Info { Title = "butterfly http api", Version = "v1" }); });
-
             services.AddLiteConsumer(Configuration)
                 .AddEntityFrameworkCore(Configuration);
 
@@ -55,35 +50,30 @@ namespace Butterfly.Server
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                
-                app.UseSwagger();
-
-                // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "butterfly http api v1");
-                });
             }
             else
             {
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "butterfly http api v1");
+            });
+
             app.UseResponseCompression();
-
             app.UseCors(cors => cors.AllowAnyOrigin());
-            
             app.UseStaticFiles();
-
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
-                
+
                 routes.MapSpaFallbackRoute(
                     name: "spa-fallback",
-                    defaults: new {controller = "Home", action = "Index"});
+                    defaults: new { controller = "Home", action = "Index" });
             });
         }
     }

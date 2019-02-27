@@ -140,5 +140,10 @@ namespace Butterfly.EntityFrameworkCore
             var histogram = queryGroup.GroupBy(x => x.Min(s => s.StartTimestamp).ToString("yyyy-MM-dd HH:mm")).Select(x => new TraceHistogram { Count = x.Count(), Time = DateTimeOffset.Parse(x.Key) });
             return Task.FromResult<IEnumerable<TraceHistogram>>(histogram.ToList());
         }
+
+        public Task<IEnumerable<TraceOperationHistogram>> GetSpanHistogramByOperaionName(TraceQuery traceQuery)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

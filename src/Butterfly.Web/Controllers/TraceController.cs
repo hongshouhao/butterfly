@@ -26,7 +26,7 @@ namespace Butterfly.Server.Controllers
 
         [HttpGet]
         public async Task<IEnumerable<TraceViewModel>> Get(
-            [FromQuery] string service, [FromQuery] string tags, 
+            [FromQuery] string service, [FromQuery] string tags,
             [FromQuery] long? startTimestamp, [FromQuery] long? finishTimestamp,
             [FromQuery] int? minDuration, [FromQuery] int? maxDuration, [FromQuery] int? limit)
         {
@@ -71,13 +71,12 @@ namespace Butterfly.Server.Controllers
             };
 
             var data = await _spanQuery.GetTraceHistogram(query);
-
             return _mapper.Map<List<TraceHistogramViewModel>>(data);
         }
 
         private List<TraceService> GetTraceServices(Trace trace)
         {
-            var traceServices= new List<TraceService>();
+            var traceServices = new List<TraceService>();
             foreach (var span in trace.Spans)
             {
                 traceServices.Add(new TraceService(ServiceHelpers.GetService(span)));

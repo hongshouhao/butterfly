@@ -194,5 +194,40 @@ namespace Butterfly.Elasticsearch
         {
             return DateTimeOffset.FromUnixTimeMilliseconds(timestamp);
         }
+
+        public async Task<IEnumerable<TraceOperationHistogram>> GetSpanHistogramByOperaionName(TraceQuery traceQuery)
+        {
+            traceQuery.Ensure();
+
+            var index = Indices.Index(_indexManager.CreateTracingIndex());
+
+            var query = BuildTracesQuery(traceQuery);
+            var histogramAggregationsResult = await _elasticClient.SearchAsync<Span>(s => s.Index(index).Size(0).Query(query)
+                .Aggregations(agg => agg.Terms("group_by_operationName",
+                        g => g.Script(sc => sc.Source("doc['operationName'].value.toUpperCase()"))
+                    )));
+
+            var histogramAggregations = histogramAggregationsResult.Aggregations.FirstOrDefault().Value as BucketAggregate;
+
+            if (histogramAggregations == null || histogramAggregations.Items == null)
+            {
+                return new TraceOperationHistogram[0];
+            }
+
+            var traceHistograms = histogramAggregations.Items
+                .Select(x =>
+                {
+                    KeyedBucket<object> bucket = x as KeyedBucket<object>;
+                    return new TraceOperationHistogram
+                    {
+                        OperationName = bucket.Key.ToString(),
+                        Count = bucket.DocCount.HasValue ? bucket.DocCount.Value : 0
+                    };
+                })
+                .OrderByDescending(x => x.Count)
+                .ToArray();
+
+            return traceHistograms;
+        }
     }
 }
